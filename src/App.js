@@ -1,64 +1,46 @@
-import React, {useState, useEffect, useLayoutEffect} from 'react'
-import {v4 as uuid} from 'uuid'
+import React, { useState, useEffect } from "react";
+import Player from "./Components/Player";
+import "./style.css";
 
 const App = () => {
-  const [todos, setTodos] = useState([])
-  const [editTodo, setEditTodo] = useState("")
+  const [songs, setSongs] = useState([
+    {
+      title: "Age Of Darkness",
+      artist: "Exodus Music and Sound",
+      image: "https://songsara.net/wp-content/uploads/2022/04/Exodus-Music-and-Sound-Gothika-400x400.jpg",
+      url: "https://dl.songsara.net/FRE/2022/8/Exodus%20Music%20and%20Sound%20-%20Gothika%20(2021)%20SONGSARA.NET/01%20Age%20Of%20Darkness.mp3",
+    },
+    {
+      title: "Awaken The Wonder",
+      artist: "Exodus Music and Sound",
+      image: "https://songsara.net/wp-content/uploads/2022/04/Exodus-Music-and-Sound-Awaken-The-Wonder-300x300.jpg",
+      url: "https://dl.songsara.net/FRE/2022/8/Exodus%20Music%20and%20Sound%20-%20Awaken%20The%20Wonder%20(2021)%20SONGSARA.NET/01%20Awaken%20The%20Wonder.mp3",
+    },
+    {
+      title: "Just a Legend",
+      artist: "Atom Music Audio",
+      image: "https://songsara.net/wp-content/uploads/2022/04/Atom-Music-Audio-Immortals-II-300x300.jpg",
+      url: "https://dl.songsara.net/FRE/2022/8/Atom%20Music%20Audio%20-%20Immortals%20II%20(2022)%20SONGSARA.NET/01%20Just%20a%20Legend.mp3",
+    },
+  ]);
+  const [currentSong, setCurrentSong] = useState(2);
+  const [nextSong, setNextSong] = useState(
+    currentSong + 1 > songs.length - 1 ? 0 : currentSong + 1
+  );
   useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem("todos"))
-    if (storedTodos) setTodos(storedTodos)
-  }, [])
+    setNextSong(currentSong + 1 > songs.length - 1 ? 0 : currentSong + 1);
+  }, [currentSong]);
 
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos))
-  }, [todos])
-  
-
-  function toggleChecked(id) {
-    const newTodos = [...todos]
-    const todo = newTodos.find(todo => todo.id === id)
-    todo.compelete = !todo.compelete
-    setTodos(newTodos)
-  }
-  function addTodo(e) {
-    setTodos([...todos, {id : uuid(), name : e.target.value, compelete : false} ])
-    e.target.value = ""
-  }
-  function DoEditTodo(e,id) {
-    const newTodos = [...todos]
-    const todo = newTodos.find(todo => todo.id === id)
-    todo.name = e.target.value
-    e.target.value = ""
-    setTodos(newTodos)
-    setEditTodo("")
-  }
-
-  function DoDeleteTodo(id) {
-    let newTodos = [...todos]
-    const todo = newTodos.find(todo => todo.id === id)
-    newTodos= newTodos.filter(cur => cur != todo)
-    setTodos(newTodos)
-  }
-   
   return (
-    <div>
-      <input type="text" placeholder="enter your new todo..." onKeyDown={e => {if (e.key === "Enter") addTodo(e)}} />
-      <br />
-      {todos.map(todo => (
-          <label key={todo.id} style={{display:"block",margin:"10px 0",padding:"10px"}}>
-            <input type="checkbox" defaultChecked={todo.compelete} onChange={() => toggleChecked(todo.id)} /> 
-            {todo.name}
-            <a style={{margin:"0 0 0 20px",background:"blue",color:"white",padding:"5px",textDecoration:"none"}} href="#" onClick={() => {setEditTodo(todo)}} >edit</a>
-            <a style={{margin:"0 0 0 5px",background:"red",color:"white",padding:"5px",textDecoration:"none"}} href="#" onClick={() => DoDeleteTodo(todo.id)}>delete</a>
-          </label>
-      ))}
-      <button onClick={() => setTodos([])}>Clear Todos</button>
-      {editTodo && <div style={{margin:"20px 0"}}>
-        <label>edit   </label>
-        <input onKeyDown={(e) => {if (e.key === "Enter") DoEditTodo(e, editTodo.id) }} type="text" defaultValue={editTodo.name} />
-      </div>}
+    <div className="player">
+      <Player 
+      currentSong={currentSong} 
+      nextSong={nextSong} 
+      songs={songs}
+      setCurrentSong={setCurrentSong}
+      />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
